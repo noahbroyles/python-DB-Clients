@@ -18,12 +18,13 @@ class DatabaseError(Exception):
 
 class Database:
 
-    def __init__(self, server: str = DBHOST, port: int = 1433, database: str = DATABASE, username: str = DBUSER, password: str = DBPASSWD, charset: str = 'UTF-8'):
+    def __init__(self, server: str = DBHOST, port: int = 3306, database: str = DATABASE, username: str = DBUSER, password: str = DBPASSWD, charset: str = 'UTF-8'):
         self._connection = pymysql.connect(
             user=username,
             password=password,
             host=server,
             database=database,
+            port=port,
             charset=charset
         )
 
