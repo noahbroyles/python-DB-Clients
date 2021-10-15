@@ -7,7 +7,7 @@ try:
     DBHOST = os.environ['DBHOST']
     DBUSER = os.environ['DBUSER']
     DBPASSWD = os.environ['DBPASSWD']
-    DATABASE = os.environ['DBDATABASE']
+    DATABASE = os.environ['DATABASE']
 except KeyError:
     DBHOST, DBUSER, DBPASSWD, DATABASE = None, None, None, None
 
