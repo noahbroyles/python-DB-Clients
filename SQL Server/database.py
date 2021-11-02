@@ -26,7 +26,7 @@ class Database:
     def __enter__(self):
         return self
 
-    def __exit__(self):
+    def __exit__(self, _type, _value, _traceback):
         self.close()
 
     def query(self, sqlQuery: str, params: list = None, convert_blanks_to_nulls: bool = True):
