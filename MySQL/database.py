@@ -1,5 +1,6 @@
 import os
 import time
+import secsie
 import pymysql
 
 
@@ -18,7 +19,21 @@ class DatabaseError(Exception):
 
 class Database:
 
-    def __init__(self, server: str = DBHOST, port: int = 3306, database: str = DATABASE, username: str = DBUSER, password: str = DBPASSWD, charset: str = 'UTF-8'):
+    def __init__(self, server: str = DBHOST, port: int = 3306, database: str = DATABASE, username: str = DBUSER, password: str = DBPASSWD, charset: str = 'UTF-8', connection_conf_file: str = None, connection_name: str = 'connection'):
+        if connection_conf_file is not None:
+            # If there is a config file specified, read it and connect from it
+            config = secsie.parse_config_file(connection_conf_file)[connection_name]
+            server = config['server']
+            database = config['database']
+            if config.get('username'):
+                username = config['username']
+            if config.get('password'):
+                password = config['password']
+            if config.get('port'):
+                port = config['port']
+            if config.get('charset'):
+                charset = config['charset']
+
         self._connection = pymysql.connect(
             user=username,
             password=password,
@@ -35,7 +50,7 @@ class Database:
         self.close()
 
     def _prepare_for_params(self, sqlString):
-        return sqlString.replace('?', '%s')  # This shit is so old it should be discontinued. SMHHHHHHHHHH
+        return sqlString.replace('?', '%s')  # This method of parameterization is so old it should be discontinued. SMFHHHHHHHHHH
 
     def query(self, sqlQuery: str, params: list = None, convert_blanks_to_nulls: bool = True):
         """
