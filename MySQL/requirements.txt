@@ -1,2 +1,2 @@
 PyMySQL==1.0.2
-secsie-conf==2.0.1
+secsie-conf==2.0.3
