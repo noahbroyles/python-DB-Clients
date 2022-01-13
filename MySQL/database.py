@@ -17,6 +17,10 @@ class DatabaseError(Exception):
     pass
 
 
+def _chunker(seq: list, size: int):
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+
+
 class Database:
 
     def __init__(self, server: str = DBHOST, port: int = 3306, database: str = DATABASE, username: str = DBUSER, password: str = DBPASSWD, charset: str = 'UTF-8', connection_conf_file: str = None, connection_name: str = 'connection'):
@@ -127,6 +131,24 @@ Parameterizes statement and runs in the database. Use for INSERT, UPDATE, and DR
             cursor.execute(sqlStmt, params)
         else:
             cursor.execute(sqlStmt)
+
+        cursor.close()
+        if commit:
+            self._connection.commit()
+    
+    def execute_many(self, sqlStmt: str, multipleParams: list, fast: bool = False, commit: bool = False, convert_blanks_to_nulls: bool = True):
+        cursor = self._connection.cursor()
+        statements = []
+
+        for param_set in multipleParams:
+            statements.append(PreparedStatement(sql=sqlStmt, params=param_set, convert_blanks_to_nulls=convert_blanks_to_nulls).sql)
+
+        if fast:
+            cursor.execute(";".join(statements))
+        else:
+            # If we are not doing it 'fast', we will split it up into batches of commands
+            for command_chunk in _chunker(statements, 100):
+                cursor.execute(';'.join(command_chunk))
 
         cursor.close()
         if commit:
