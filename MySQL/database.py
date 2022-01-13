@@ -46,7 +46,7 @@ class Database:
     def __enter__(self):
         return self
 
-    def __exit__(self):
+    def __exit__(self, _type, _value, _traceback):
         self.close()
 
     def _prepare_for_params(self, sqlString):
